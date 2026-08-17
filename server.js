@@ -30,30 +30,236 @@ app.get('/', (req, res) => {
     <html lang="pt-BR">
     <head>
       <meta charset="UTF-8">
-      <title>Coleção de Livros</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Coleção de Livros na AWS</title>
       <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background: #f0f2f5; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
-        button { background: #232f3e; color: white; border: none; cursor: pointer; font-weight: bold; }
-        ul { list-style: none; padding: 0; }
-        li { background: #f9f9f9; border: 1px solid #ddd; margin: 8px 0; padding: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .actions button { width: auto; margin-left: 5px; padding: 5px 10px; font-size: 12px; }
-        .btn-del { background: #d9534f; }
-        .btn-edit { background: #f0ad4e; }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Fundo com Gradiente Azul e Lilás */
+        body {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 80%, #581c87 100%);
+          background-attachment: fixed;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 40px 20px;
+          color: #ffffff;
+        }
+
+        .main-wrapper {
+          width: 100%;
+          max-width: 700px;
+          display: flex;
+          flex-direction: column;
+          gap: 25px;
+        }
+
+        /* Estilo Glassmorphism (Container Transparente) */
+        .glass-card {
+          background: rgba(255, 255, 255, 0.1);
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 20px;
+          padding: 28px;
+          box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        h2, h3 {
+          font-size: 1.4rem;
+          font-weight: 600;
+          margin-bottom: 20px;
+          color: #f3e8ff;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+
+        .form-grid {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .input-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .input-group label {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.8);
+          font-weight: 500;
+        }
+
+        input {
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.25);
+          border-radius: 12px;
+          padding: 12px 16px;
+          color: #ffffff;
+          font-size: 0.95rem;
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        input::placeholder {
+          color: rgba(255, 255, 255, 0.5);
+        }
+
+        input:focus {
+          background: rgba(255, 255, 255, 0.22);
+          border-color: #c084fc;
+          box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
+        }
+
+        /* Botão Principal */
+        .btn-primary {
+          margin-top: 10px;
+          background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+          color: #ffffff;
+          border: none;
+          border-radius: 12px;
+          padding: 14px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+          filter: brightness(1.1);
+        }
+
+        .btn-primary:active {
+          transform: translateY(0);
+        }
+
+        /* Lista de Livros */
+        ul {
+          list-style: none;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        li {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          padding: 16px;
+          border-radius: 14px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: all 0.3s ease;
+        }
+
+        li:hover {
+          background: rgba(255, 255, 255, 0.15);
+          transform: translateY(-2px);
+        }
+
+        .book-info strong {
+          font-size: 1.05rem;
+          color: #ffffff;
+        }
+
+        .book-info small {
+          display: block;
+          margin-top: 4px;
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.85rem;
+        }
+
+        .actions {
+          display: flex;
+          gap: 8px;
+        }
+
+        .actions button {
+          border: none;
+          padding: 8px 14px;
+          border-radius: 8px;
+          font-size: 0.85rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+          background: rgba(251, 191, 36, 0.25);
+          color: #fef08a;
+          border: 1px solid rgba(251, 191, 36, 0.4);
+        }
+
+        .btn-edit:hover {
+          background: rgba(251, 191, 36, 0.45);
+        }
+
+        .btn-del {
+          background: rgba(239, 68, 68, 0.25);
+          color: #fca5a5;
+          border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-del:hover {
+          background: rgba(239, 68, 68, 0.45);
+        }
+
+        .empty-msg {
+          text-align: center;
+          color: rgba(255, 255, 255, 0.6);
+          padding: 20px 0;
+          font-style: italic;
+        }
       </style>
     </head>
     <body>
-      <div class="container">
-        <h2>📚 Minha Coleção de Livros</h2>
-        <input type="hidden" id="livro-id">
-        <input type="text" id="titulo" placeholder="Título do Livro">
-        <input type="text" id="autor" placeholder="Autor">
-        <input type="number" id="ano" placeholder="Ano de Lançamento">
-        <button id="btn-salvar" onclick="salvar()">Adicionar Livro</button>
 
-        <h3>Livros Na Estante:</h3>
-        <ul id="lista"></ul>
+      <div class="main-wrapper">
+        
+        <!-- PRIMEIRO CONTAINER: Formulário -->
+        <div class="glass-card">
+          <h2>📚 Gerenciador de Livros</h2>
+          <div class="form-grid">
+            <input type="hidden" id="livro-id">
+            
+            <div class="input-group">
+              <label for="titulo">Título do Livro</label>
+              <input type="text" id="titulo" placeholder="Ex: O Senhor dos Anéis">
+            </div>
+
+            <div class="input-group">
+              <label for="autor">Autor</label>
+              <input type="text" id="autor" placeholder="Ex: J.R.R. Tolkien">
+            </div>
+
+            <div class="input-group">
+              <label for="ano">Ano de Lançamento</label>
+              <input type="number" id="ano" placeholder="Ex: 1954">
+            </div>
+
+            <button id="btn-salvar" class="btn-primary" onclick="salvar()">Adicionar Livro</button>
+          </div>
+        </div>
+
+        <!-- SEGUNDO CONTAINER: Estante de Livros -->
+        <div class="glass-card">
+          <h3>📖 Livros na Estante</h3>
+          <ul id="lista"></ul>
+        </div>
+
       </div>
 
       <script>
@@ -62,16 +268,22 @@ app.get('/', (req, res) => {
           const livros = await res.json();
           const lista = document.getElementById('lista');
           lista.innerHTML = '';
+          
+          if (livros.length === 0) {
+            lista.innerHTML = '<p class="empty-msg">Nenhum livro cadastrado na estante ainda.</p>';
+            return;
+          }
+
           livros.forEach(l => {
             lista.innerHTML += \`
               <li>
-                <div>
-                  <strong>\${l.titulo}</strong> (\${l.ano})<br>
+                <div class="book-info">
+                  <strong>\${l.titulo}</strong> (\${l.ano})
                   <small>Autor: \${l.autor}</small>
                 </div>
                 <div class="actions">
                   <button class="btn-edit" onclick="prepararEdicao(\${l.id}, '\${l.titulo}', '\${l.autor}', \${l.ano})">Editar</button>
-                  <button class="btn-del" onclick="deletar(\${l.id})">X</button>
+                  <button class="btn-del" onclick="deletar(\${l.id})">Excluir</button>
                 </div>
               </li>
             \`;
@@ -121,8 +333,10 @@ app.get('/', (req, res) => {
         }
 
         async function deletar(id) {
-          await fetch(\`/api/livros/\${id}\`, { method: 'DELETE' });
-          carregar();
+          if (confirm('Deseja realmente excluir este livro?')) {
+            await fetch(\`/api/livros/\${id}\`, { method: 'DELETE' });
+            carregar();
+          }
         }
 
         carregar();
