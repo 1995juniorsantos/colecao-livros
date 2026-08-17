@@ -1,0 +1,45 @@
+name: Deploy Automatico na AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Conectar na EC2 via SSH e atualizar Container Docker
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Entra na pasta ou clona se nao existir
+            if [ ! -d "colecao-livros" ]; then
+              git clone https://github.com/${{ github.repository }}.git colecao-livros
+            fi
+            cd colecao-livros
+            git pull origin main
+
+            # Reconstrui a imagem Docker
+            docker build -t app-livros .
+
+            # Parar container antigo se existir
+            docker stop app-livros-container || true
+            docker rm app-livros-container || true
+
+            # Executa o novo container conectado ao RDS
+            docker run -d \
+              -p 80:3000 \
+              -e DB_HOST="${{ secrets.RDS_HOST }}" \
+              -e DB_USER="postgres" \
+              -e DB_PASSWORD="${{ secrets.RDS_PASSWORD }}" \
+              -e DB_NAME="postgres" \
+              --name app-livros-container \
+              app-livros
