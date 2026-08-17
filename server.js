@@ -32,235 +32,132 @@ app.get('/', (req, res) => {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Coleção de Livros na AWS</title>
-      <style>
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-          font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-        }
+      
+      <!-- Bootstrap 5.3 CSS -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Bootstrap Icons -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
-        /* Fundo com Gradiente Azul e Lilás */
+      <style>
         body {
           min-height: 100vh;
-          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4c1d95 80%, #581c87 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 35%, #312e81 70%, #4c1d95 100%);
           background-attachment: fixed;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          padding: 40px 20px;
           color: #ffffff;
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
 
-        .main-wrapper {
-          width: 100%;
-          max-width: 700px;
-          display: flex;
-          flex-direction: column;
-          gap: 25px;
-        }
-
-        /* Estilo Glassmorphism (Container Transparente) */
+        /* Glassmorphism customizado */
         .glass-card {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(255, 255, 255, 0.08);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(255, 255, 255, 0.2);
-          border-radius: 20px;
-          padding: 28px;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 1.25rem;
           box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        h2, h3 {
-          font-size: 1.4rem;
-          font-weight: 600;
-          margin-bottom: 20px;
-          color: #f3e8ff;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-          display: flex;
-          align-items: center;
-          gap: 10px;
+        /* Inputs estilizados para o modo transparente */
+        .glass-input {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border: 1px solid rgba(255, 255, 255, 0.25) !important;
+          color: #ffffff !important;
+          border-radius: 0.75rem !important;
         }
 
-        .form-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 14px;
+        .glass-input::placeholder {
+          color: rgba(255, 255, 255, 0.5) !important;
         }
 
-        .input-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
+        .glass-input:focus {
+          background: rgba(255, 255, 255, 0.2) !important;
+          border-color: #c084fc !important;
+          box-shadow: 0 0 12px rgba(192, 132, 252, 0.4) !important;
         }
 
-        .input-group label {
-          font-size: 0.85rem;
-          color: rgba(255, 255, 255, 0.8);
-          font-weight: 500;
-        }
-
-        input {
-          background: rgba(255, 255, 255, 0.12);
-          border: 1px solid rgba(255, 255, 255, 0.25);
-          border-radius: 12px;
-          padding: 12px 16px;
-          color: #ffffff;
-          font-size: 0.95rem;
-          outline: none;
-          transition: all 0.3s ease;
-        }
-
-        input::placeholder {
-          color: rgba(255, 255, 255, 0.5);
-        }
-
-        input:focus {
-          background: rgba(255, 255, 255, 0.22);
-          border-color: #c084fc;
-          box-shadow: 0 0 12px rgba(192, 132, 252, 0.4);
-        }
-
-        /* Botão Principal */
-        .btn-primary {
-          margin-top: 10px;
+        /* Botão Gradiente Principal */
+        .btn-gradient {
           background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-          color: #ffffff;
           border: none;
-          border-radius: 12px;
-          padding: 14px;
-          font-size: 1rem;
+          color: #ffffff;
+          border-radius: 0.75rem;
           font-weight: 600;
-          cursor: pointer;
           transition: all 0.3s ease;
           box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
         }
 
-        .btn-primary:hover {
+        .btn-gradient:hover {
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6);
+          color: #ffffff;
           filter: brightness(1.1);
         }
 
-        .btn-primary:active {
-          transform: translateY(0);
+        /* Itens da lista */
+        .glass-item {
+          background: rgba(255, 255, 255, 0.06);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          border-radius: 0.85rem;
+          transition: all 0.25 ease;
         }
 
-        /* Lista de Livros */
-        ul {
-          list-style: none;
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        li {
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.15);
-          padding: 16px;
-          border-radius: 14px;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          transition: all 0.3s ease;
-        }
-
-        li:hover {
-          background: rgba(255, 255, 255, 0.15);
+        .glass-item:hover {
+          background: rgba(255, 255, 255, 0.12);
           transform: translateY(-2px);
-        }
-
-        .book-info strong {
-          font-size: 1.05rem;
-          color: #ffffff;
-        }
-
-        .book-info small {
-          display: block;
-          margin-top: 4px;
-          color: rgba(255, 255, 255, 0.7);
-          font-size: 0.85rem;
-        }
-
-        .actions {
-          display: flex;
-          gap: 8px;
-        }
-
-        .actions button {
-          border: none;
-          padding: 8px 14px;
-          border-radius: 8px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .btn-edit {
-          background: rgba(251, 191, 36, 0.25);
-          color: #fef08a;
-          border: 1px solid rgba(251, 191, 36, 0.4);
-        }
-
-        .btn-edit:hover {
-          background: rgba(251, 191, 36, 0.45);
-        }
-
-        .btn-del {
-          background: rgba(239, 68, 68, 0.25);
-          color: #fca5a5;
-          border: 1px solid rgba(239, 68, 68, 0.4);
-        }
-
-        .btn-del:hover {
-          background: rgba(239, 68, 68, 0.45);
-        }
-
-        .empty-msg {
-          text-align: center;
-          color: rgba(255, 255, 255, 0.6);
-          padding: 20px 0;
-          font-style: italic;
         }
       </style>
     </head>
-    <body>
+    <body class="py-4 py-md-5">
 
-      <div class="main-wrapper">
+      <div class="container" style="max-width: 760px;">
         
         <!-- PRIMEIRO CONTAINER: Formulário -->
-        <div class="glass-card">
-          <h2>📚 Gerenciador de Livros</h2>
-          <div class="form-grid">
+        <div class="glass-card p-4 p-md-5 mb-4">
+          <h2 class="h4 fw-bold mb-4 text-light d-flex align-items-center gap-2">
+            <i class="bi bi-journal-bookmark-fill text-warning"></i> Gerenciador de Livros
+          </h2>
+
+          <form onsubmit="event.preventDefault(); salvar();">
             <input type="hidden" id="livro-id">
             
-            <div class="input-group">
-              <label for="titulo">Título do Livro</label>
-              <input type="text" id="titulo" placeholder="Ex: O Senhor dos Anéis">
-            </div>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <label for="titulo" class="form-label small text-light opacity-75 fw-medium">Título do Livro</label>
+                <input type="text" class="form-control form-control-lg glass-input" id="titulo" placeholder="Ex: O Senhor dos Anéis" required>
+              </div>
 
-            <div class="input-group">
-              <label for="autor">Autor</label>
-              <input type="text" id="autor" placeholder="Ex: J.R.R. Tolkien">
-            </div>
+              <div class="col-12 col-md-6">
+                <label for="autor" class="form-label small text-light opacity-75 fw-medium">Autor</label>
+                <input type="text" class="form-control form-control-lg glass-input" id="autor" placeholder="Ex: J.R.R. Tolkien" required>
+              </div>
 
-            <div class="input-group">
-              <label for="ano">Ano de Lançamento</label>
-              <input type="number" id="ano" placeholder="Ex: 1954">
-            </div>
+              <div class="col-12">
+                <label for="ano" class="form-label small text-light opacity-75 fw-medium">Ano de Lançamento</label>
+                <input type="number" class="form-control form-control-lg glass-input" id="ano" placeholder="Ex: 1954" required>
+              </div>
 
-            <button id="btn-salvar" class="btn-primary" onclick="salvar()">Adicionar Livro</button>
-          </div>
+              <div class="col-12 mt-4">
+                <button id="btn-salvar" type="submit" class="btn btn-gradient btn-lg w-100 py-3">
+                  <i class="bi bi-plus-circle-fill me-1"></i> Adicionar Livro
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
 
         <!-- SEGUNDO CONTAINER: Estante de Livros -->
-        <div class="glass-card">
-          <h3>📖 Livros na Estante</h3>
-          <ul id="lista"></ul>
+        <div class="glass-card p-4 p-md-5">
+          <h3 class="h5 fw-bold mb-4 text-light d-flex align-items-center gap-2">
+            <i class="bi bi-bookshelf text-info"></i> Livros na Estante
+          </h3>
+
+          <div id="lista" class="d-flex flex-column gap-3"></div>
         </div>
 
       </div>
+
+      <!-- Bootstrap JS -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
       <script>
         async function carregar() {
@@ -270,22 +167,31 @@ app.get('/', (req, res) => {
           lista.innerHTML = '';
           
           if (livros.length === 0) {
-            lista.innerHTML = '<p class="empty-msg">Nenhum livro cadastrado na estante ainda.</p>';
+            lista.innerHTML = \`
+              <div class="text-center text-light opacity-50 py-4">
+                <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                <p class="mb-0">Nenhum livro cadastrado na estante ainda.</p>
+              </div>
+            \`;
             return;
           }
 
           livros.forEach(l => {
             lista.innerHTML += \`
-              <li>
-                <div class="book-info">
-                  <strong>\${l.titulo}</strong> (\${l.ano})
-                  <small>Autor: \${l.autor}</small>
+              <div class="glass-item p-3 d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                <div>
+                  <div class="fw-semibold fs-5 text-white">\${l.titulo} <span class="badge bg-white bg-opacity-10 text-light fw-normal fs-6 ms-1">\${l.ano}</span></div>
+                  <small class="text-light opacity-75"><i class="bi bi-person me-1"></i>\${l.autor}</small>
                 </div>
-                <div class="actions">
-                  <button class="btn-edit" onclick="prepararEdicao(\${l.id}, '\${l.titulo}', '\${l.autor}', \${l.ano})">Editar</button>
-                  <button class="btn-del" onclick="deletar(\${l.id})">Excluir</button>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-warning btn-sm px-3 rounded-3" onclick="prepararEdicao(\${l.id}, '\${l.titulo}', '\${l.autor}', \${l.ano})">
+                    <i class="bi bi-pencil-square me-1"></i> Editar
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm px-3 rounded-3" onclick="deletar(\${l.id})">
+                    <i class="bi bi-trash me-1"></i> Excluir
+                  </button>
                 </div>
-              </li>
+              </div>
             \`;
           });
         }
@@ -321,7 +227,7 @@ app.get('/', (req, res) => {
           document.getElementById('titulo').value = titulo;
           document.getElementById('autor').value = autor;
           document.getElementById('ano').value = ano;
-          document.getElementById('btn-salvar').innerText = 'Atualizar Livro';
+          document.getElementById('btn-salvar').innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Atualizar Livro';
         }
 
         function limpar() {
@@ -329,7 +235,7 @@ app.get('/', (req, res) => {
           document.getElementById('titulo').value = '';
           document.getElementById('autor').value = '';
           document.getElementById('ano').value = '';
-          document.getElementById('btn-salvar').innerText = 'Adicionar Livro';
+          document.getElementById('btn-salvar').innerHTML = '<i class="bi bi-plus-circle-fill me-1"></i> Adicionar Livro';
         }
 
         async function deletar(id) {
